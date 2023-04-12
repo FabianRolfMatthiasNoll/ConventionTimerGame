@@ -12,6 +12,7 @@ import time
 HIGHSCORES_FILE = 'highscores.json'  # name of the file for the highscores
 MAX_HIGHSCORES = 10  # how many highscores should be displayed (watch out for screen size)
 TIMER_MAX_DURATION = 10 * 60  # how long until timer runs out x * 60seconds
+SPEAKER_VOLUME = 1  # doesn't seem to change anything in the current hardware configuration
 ###############################################################################################################
 
 # Constants
@@ -24,6 +25,10 @@ BUZZER_EVENT = pygame.USEREVENT + 1
 GPIO_PIN = 17
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(GPIO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+# Initialize Speaker
+pygame.mixer.init()
+pygame.mixer.music.set_volume(SPEAKER_VOLUME)
 
 # Colors
 WHITE = (255, 255, 255)
@@ -89,6 +94,11 @@ def name_exists(name, highscores):
 
 def generate_code(length):
     return ''.join(random.choices(string.ascii_uppercase, k=length))
+
+
+def play_sound(num):
+    sound = pygame.mixer.Sound(f"sounds/example{num}.wav")
+    sound.play()
 
 
 def draw_text(text, font, color, surface, x, y):
@@ -216,7 +226,6 @@ def main():
                     elif key == pygame.K_SPACE:
                         if name.strip() == "":
                             name = generate_code(6)
-
                         name = name.upper()
                         if name_exists(name, highscores):
                             name_error = True
@@ -234,6 +243,7 @@ def main():
                         timer_started = True
                         timer_start_time = time.time()
                     elif state == 'timer':
+                        play_sound(2)
                         state = 'name_input'
                         timer_started = False
                         timer_value = time.time() - timer_start_time
@@ -261,10 +271,8 @@ def main():
             if timer_value >= TIMER_MAX_DURATION:
                 timer_started = False
                 state = 'error'
-
         if state == 'error':
             draw_error_screen()
-
         pygame.display.flip()
         time.sleep(0.01)
 
