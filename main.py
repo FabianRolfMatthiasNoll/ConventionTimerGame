@@ -10,7 +10,7 @@ import time
 
 ######################################### Settings for the User ###############################################
 HIGHSCORES_FILE = 'highscores.json'  # name of the file for the highscores
-MAX_HIGHSCORES = 10  # how many highscores should be displayed (watch out for screen size)
+MAX_HIGHSCORES = 10000  # how many highscores should be displayed (watch out for screen size)
 TIMER_MAX_DURATION = 10 * 60  # how long until timer runs out x * 60seconds
 SPEAKER_VOLUME = 1  # doesn't seem to change anything in the current hardware configuration
 ###############################################################################################################
@@ -108,12 +108,8 @@ def draw_text(text, font, color, surface, x, y):
     surface.blit(text_obj, text_rect)
 
 
-def draw_main_menu(highscores):
+def draw_main_menu(highscores, scroll_offset):
     screen.fill(BLACK)
-    title_text = "BESTENLISTE"
-    title_obj = FONT_BIG_PLUS.render(title_text, 1, WHITE)
-    title_rect = title_obj.get_rect(centerx=WIDTH // 2, y=int(HEIGHT * REL_MENU_TITLE_Y))
-    screen.blit(title_obj, title_rect)
 
     for i, highscore in enumerate(highscores[:MAX_HIGHSCORES]):
         name = highscore['name']
@@ -121,10 +117,23 @@ def draw_main_menu(highscores):
         entry_text = f"{i + 1}. {name} - {score}"
         entry_obj = FONT_BIG.render(entry_text, 1, WHITE)
 
-        entry_rect = entry_obj.get_rect(centerx=WIDTH // 2, y=int(HEIGHT * REL_HIGHSCORES_Y) + (i + 0.5) * 70)
+        entry_rect = entry_obj.get_rect(centerx=WIDTH // 2, y=int(HEIGHT * REL_HIGHSCORES_Y) + (i + 0.5) * 70 - scroll_offset)
         screen.blit(entry_obj, entry_rect)
 
+    pygame.draw.rect(screen, (0, 0, 0), (0, 0, WIDTH, FONT_BIG_PLUS.get_height() + 50))
+    title_text = "BESTENLISTE"
+    title_obj = FONT_BIG_PLUS.render(title_text, 1, WHITE)
+    title_rect = title_obj.get_rect(centerx=WIDTH // 2, y=int(HEIGHT * REL_MENU_TITLE_Y))
+    screen.blit(title_obj, title_rect)
     pygame.display.flip()
+
+
+def scroll_highscores(event, scroll_offset):
+    if event.key == pygame.K_UP:
+        scroll_offset += 70
+    elif event.key == pygame.K_DOWN:
+        scroll_offset -= 70
+    return scroll_offset
 
 
 def draw_timer(timer_value):
@@ -201,6 +210,7 @@ def main():
     name_error = False
     cursor_visible = True
     cursor_timer = datetime.datetime.now()
+    scroll_offset = 0
     last_buzzer_press_time = time.time()
     running = True
     # Main loop
@@ -252,8 +262,10 @@ def main():
                         timer_value_formatted = f"{int(minutes):02d}:{int(seconds):02d}:{int(ms):02d}"
                     elif state == 'error':
                         state = 'menu'
+                elif state == 'menu' and event.type == pygame.KEYDOWN:
+                    scroll_offset = scroll_highscores(event, scroll_offset)
         if state == 'menu':
-            draw_main_menu(highscores)
+            draw_main_menu(highscores, scroll_offset)
         elif state == 'timer':
             draw_timer(timer_value)
         elif state == 'name_input':
