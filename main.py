@@ -13,6 +13,7 @@ HIGHSCORES_FILE = 'highscores.json'  # name of the file for the highscores
 MAX_HIGHSCORES = 10000  # how many highscores should be displayed (watch out for screen size)
 TIMER_MAX_DURATION = 10 * 60  # how long until timer runs out x * 60seconds
 SPEAKER_VOLUME = 1  # doesn't seem to change anything in the current hardware configuration
+ENTER_NAME_TEXT = "Gib deinen Namen ein:"
 ###############################################################################################################
 
 # Constants
@@ -157,7 +158,7 @@ def draw_name_input(name, timer_value_formatted, cursor_visible):
     screen.blit(your_time_obj, your_time_rect)
 
     # Center the "Enter your name" text
-    enter_your_name_text = "Gib deinen Namen ein:"
+    enter_your_name_text = ENTER_NAME_TEXT
     enter_your_name_obj = FONT_BIG.render(enter_your_name_text, 1, TEXT_COLOR)
     enter_your_name_rect = enter_your_name_obj.get_rect(centerx=WIDTH // 2, y=HEIGHT // 2 - 100)
     screen.blit(enter_your_name_obj, enter_your_name_rect)
@@ -167,9 +168,16 @@ def draw_name_input(name, timer_value_formatted, cursor_visible):
     name_rect = name_obj.get_rect(centerx=WIDTH // 2, y=HEIGHT // 2)
     screen.blit(name_obj, name_rect)
 
+    # Calculate the desired width of the rectangle (12 letters wide)
+    letter_width, _ = FONT_BIG.size("A")
+    desired_width = letter_width * 12
+
+    # Calculate the left edge of the centered rectangle
+    rect_left = (WIDTH - desired_width) // 2
+
     # Draw the field around the name input
     pygame.draw.rect(screen, TEXT_COLOR,
-                     (name_rect.x - 5, name_rect.y - 5, name_rect.width + 10, name_rect.height + 10), 2)
+                     (rect_left - 5, name_rect.y - 5, desired_width, name_rect.height + 10), 2)
 
     # Draw cursor
     if cursor_visible:
