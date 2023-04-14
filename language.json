@@ -1,0 +1,23 @@
+{
+    "english": {
+        "title": "HIGHSCORES",
+        "time_display": "Your Time:",
+        "enter_name": "Enter your name:",
+        "fail_message": "You`re to slow, better luck next time",
+        "return_message": "Press the Buzzer to return"
+    },
+    "german_personal": {
+        "title": "BESTENLISTE",
+        "time_display": "Deine Zeit:",
+        "enter_name": "Gib deinen Namen ein:",
+        "fail_message": "Leider zu langsam, viel Glück beim nächsten mal",
+        "return_message": "Drücke den Buzzer um zurückzukehren"
+    },
+    "german_formal": {
+        "title": "BESTENLISTE",
+        "time_display": "Ihre Zeit:",
+        "enter_name": "Geben Sie Ihren Namen ein:",
+        "fail_message": "Viel Erfolg beim nächsten Mal",
+        "return_message": "Buzzer drücken um zurückzukehren"
+    }
+}

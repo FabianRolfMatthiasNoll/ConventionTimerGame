@@ -7,13 +7,15 @@ import pygame
 import RPi.GPIO as GPIO
 import json
 import time
+from translator import Translator
 
 ######################################### Settings for the User ###############################################
+# available languages: english, german_formal, german_personal
+translator = Translator('german_personal')
 HIGHSCORES_FILE = 'highscores.json'  # name of the file for the highscores
-MAX_HIGHSCORES = 10000  # how many highscores should be displayed (watch out for screen size)
+MAX_HIGHSCORES = 10000  # how many highscores should be displayed
 TIMER_MAX_DURATION = 10 * 60  # how long until timer runs out x * 60seconds
 SPEAKER_VOLUME = 1  # doesn't seem to change anything in the current hardware configuration
-ENTER_NAME_TEXT = "Gib deinen Namen ein:"
 ###############################################################################################################
 
 # Constants
@@ -118,13 +120,16 @@ def draw_main_menu(highscores, scroll_offset):
         entry_text = f"{i + 1}. {name} - {score}"
         entry_obj = FONT_BIG.render(entry_text, 1, WHITE)
 
-        entry_rect = entry_obj.get_rect(centerx=WIDTH // 2, y=int(HEIGHT * REL_HIGHSCORES_Y) + (i + 0.5) * 70 - scroll_offset)
+        entry_rect = entry_obj.get_rect(
+            centerx=WIDTH // 2, y=int(HEIGHT * REL_HIGHSCORES_Y) + (i + 0.5) * 70 - scroll_offset)
         screen.blit(entry_obj, entry_rect)
 
-    pygame.draw.rect(screen, (0, 0, 0), (0, 0, WIDTH, FONT_BIG_PLUS.get_height() + 50))
-    title_text = "BESTENLISTE"
+    pygame.draw.rect(screen, (0, 0, 0), (0, 0, WIDTH,
+                     FONT_BIG_PLUS.get_height() + 50))
+    title_text = translator.translate("title")
     title_obj = FONT_BIG_PLUS.render(title_text, 1, WHITE)
-    title_rect = title_obj.get_rect(centerx=WIDTH // 2, y=int(HEIGHT * REL_MENU_TITLE_Y))
+    title_rect = title_obj.get_rect(
+        centerx=WIDTH // 2, y=int(HEIGHT * REL_MENU_TITLE_Y))
     screen.blit(title_obj, title_rect)
     pygame.display.flip()
 
@@ -152,15 +157,18 @@ def draw_name_input(name, timer_value_formatted, cursor_visible):
     screen.fill(BACKGROUND_COLOR)
 
     # Center the "Your time" text
-    your_time_text = f"Deine Zeit: {timer_value_formatted}"
+    text = translator.translate("time_display")
+    your_time_text = f"{text} {timer_value_formatted}"
     your_time_obj = FONT_TIME.render(your_time_text, 1, TEXT_COLOR)
-    your_time_rect = your_time_obj.get_rect(centerx=WIDTH // 2, y=HEIGHT // 2 - 250)
+    your_time_rect = your_time_obj.get_rect(
+        centerx=WIDTH // 2, y=HEIGHT // 2 - 250)
     screen.blit(your_time_obj, your_time_rect)
 
     # Center the "Enter your name" text
-    enter_your_name_text = ENTER_NAME_TEXT
+    enter_your_name_text = translator.translate("enter_name")
     enter_your_name_obj = FONT_BIG.render(enter_your_name_text, 1, TEXT_COLOR)
-    enter_your_name_rect = enter_your_name_obj.get_rect(centerx=WIDTH // 2, y=HEIGHT // 2 - 100)
+    enter_your_name_rect = enter_your_name_obj.get_rect(
+        centerx=WIDTH // 2, y=HEIGHT // 2 - 100)
     screen.blit(enter_your_name_obj, enter_your_name_rect)
 
     # Center the name input text
@@ -193,12 +201,14 @@ def draw_error_screen():
 
     # Center the "Timer exceeded the maximum duration" text
     error_message = "Leider hat es nicht gereicht :("
-    error_message_obj = FONT_TIME.render(error_message, 1, TEXT_COLOR)
-    error_message_rect = error_message_obj.get_rect(centerx=WIDTH // 2, y=HEIGHT // 2 - 100)
+    error_message_obj = FONT_TIME.render(
+        translator.translate("fail_message"), 1, TEXT_COLOR)
+    error_message_rect = error_message_obj.get_rect(
+        centerx=WIDTH // 2, y=HEIGHT // 2 - 100)
     screen.blit(error_message_obj, error_message_rect)
 
     # Center the "Press SPACE to return to the main menu" text
-    sub_message = "Drücke den Buzzer um zurückzukehren"
+    sub_message = translator.translate("return_message")
     sub_message_obj = FONT_BIG_PLUS.render(sub_message, 1, TEXT_COLOR)
     sub_message_rect = sub_message_obj.get_rect(centerx=WIDTH // 2,
                                                 y=error_message_rect.y + error_message_rect.height + 20)
