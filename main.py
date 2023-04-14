@@ -241,10 +241,10 @@ def main():
                 if state == 'name_input':
                     if key == pygame.K_BACKSPACE:
                         name = name[:-1]
-                    elif key == pygame.K_SPACE and name.strip() == "":
+                    elif (key == pygame.K_SPACE or key == pygame.K_RETURN) and name.strip() == "":
                         name = generate_code(6)
                         name = name.upper()
-                    elif key == pygame.K_SPACE:
+                    elif key == pygame.K_SPACE or key == pygame.K_RETURN:
                         if name_exists(name, highscores):
                             name_error = True
                         else:
